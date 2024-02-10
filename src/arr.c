@@ -120,7 +120,6 @@ Option array_pop(Array_t *arr) {
 	if(!arr->isValid || arr->used == 0)
 		return ERROR_FAIL;
 	Option last = array_last(*arr);
-	printf("a%d\n", *((int *)last.ret));
 	arr->used--;
 	return last;
 }

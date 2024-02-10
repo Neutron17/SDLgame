@@ -53,7 +53,7 @@ void logdestroy() {
 	pthread_mutex_destroy(&logmutex);
 }
 
-void __logf(enum LogLevel level, const char *file,
+void __log_f_(enum LogLevel level, const char *file,
 #ifndef NO_FUNC
 		const char *func,
 #endif
@@ -83,7 +83,7 @@ void __logf(enum LogLevel level, const char *file,
 		logtofile(message);
 }
 
-void __log(enum LogLevel level, const char *file,
+void __log_(enum LogLevel level, const char *file,
 #ifndef NO_FUNC
 		const char *func,
 #endif

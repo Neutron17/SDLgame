@@ -15,19 +15,19 @@ enum LogLevel {
 #endif
 
 #ifndef NO_FUNC
-	#define LOG(LVL, MSG) __log(LVL, __FILE__, __func__, __LINE__, MSG)
-	#define LOGF(LVL, ...) __logf(LVL, __FILE__, __func__, __LINE__, __VA_ARGS__)
+	#define LOG(LVL, MSG) __log_(LVL, __FILE__, __func__, __LINE__, MSG)
+	#define LOGF(LVL, ...) __log_f_(LVL, __FILE__, __func__, __LINE__, __VA_ARGS__)
 #else
-	#define LOG(LVL, MSG) __log(LVL, __FILE__, __LINE__, MSG)
-	#define LOGF(LVL, ...) __logf(LVL, __FILE__, __LINE__, __VA_ARGS__)
+	#define LOG(LVL, MSG) __log_(LVL, __FILE__, __LINE__, MSG)
+	#define LOGF(LVL, ...) __log_f_(LVL, __FILE__, __LINE__, __VA_ARGS__)
 #endif
 
-void __logf(enum LogLevel level, const char *file,
+void __log_f_(enum LogLevel level, const char *file,
 #ifndef NO_FUNC
 		const char *func,
 #endif
 		int line, const char *format, ...);
-void __log(enum LogLevel level, const char *file,
+void __log_(enum LogLevel level, const char *file,
 #ifndef NO_FUNC
 		const char *func,
 #endif

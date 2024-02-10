@@ -1,6 +1,6 @@
 CC = cc
 
-PNAME = base
+PNAME = spiel
 
 SRC  = $(shell find src -name "*.c")
 OBJ  = $(SRC:.c=.o)
@@ -16,6 +16,8 @@ CCFLAGS += -pedantic
 
 LDFLAGS  = $(INCFLAGS)
 LDFLAGS += -lpthread
+LDFLAGS += -lSDL2
+LDFLAGS += -lSDL2_image
 LDFLAGS += -lrt
 
 INSTALL_PATH = /usr/local/bin
