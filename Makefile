@@ -19,6 +19,7 @@ LDFLAGS += -lpthread
 LDFLAGS += -lSDL2
 LDFLAGS += -lSDL2_image
 LDFLAGS += -lrt
+LDFLAGS += -lm
 
 INSTALL_PATH = /usr/local/bin
 
