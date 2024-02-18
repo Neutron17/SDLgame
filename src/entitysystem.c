@@ -2,10 +2,10 @@
 #include <pthread.h>
 
 #include "entitysystem.h"
-#include "arr.h"
-#include "exitCodes.h"
-#include "log.h"
-#include "lt.h"
+#include "base/arr.h"
+#include "base/exitCodes.h"
+#include "base/log.h"
+#include "base/lt.h"
 
 static Array_t entities;
 static int id_counter;
@@ -35,7 +35,7 @@ Entity _entity(int x, int y, int w, int h, int type, SDL_Texture *texture) {
 	return ret;
 }
 
-static int remover;
+static int remover; // TODO: thread safety
 static bool _remove_iter(const void *data) {
 	Entity it = *(Entity *)data;
 	if(it._id == remover)

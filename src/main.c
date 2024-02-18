@@ -5,9 +5,9 @@
 
 #include <SDL2/SDL.h>
 
-#include "exitCodes.h"
-#include "log.h"
-#include "lt.h"
+#include "base/exitCodes.h"
+#include "base/log.h"
+#include "base/lt.h"
 #include "entitysystem.h"
 
 void graphInit(void);

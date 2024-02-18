@@ -34,10 +34,10 @@ typedef struct {
 
 void entitysystemInit();
 void entitysystemDestroy();
-Entity _entity(int x, int y, int w, int h, int type, SDL_Texture *texture);
-#define entity(X, Y, W, H, T) _entity(X,Y,W,H,ET_DEFAULT,T)
 void entitysystemAdd(Entity *e);
 void entitysystemRemove(Entity *e);
+Entity _entity(int x, int y, int w, int h, int type, SDL_Texture *texture);
+#define entity(X, Y, W, H, T) _entity(X,Y,W,H,ET_DEFAULT,T)
 
 #endif // _NTR_ENTITY_SYSTEM_H_
 
