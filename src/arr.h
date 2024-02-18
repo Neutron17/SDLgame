@@ -6,6 +6,8 @@
  * should return true(1) if a and b are equal */
 typedef bool (*ArrayCmp)(void *a, void *b);
 
+typedef bool (*ArrayCondIter)(const void *it);
+
 typedef struct Array {
 	void *members;
 	unsigned mem_sz;
@@ -25,13 +27,13 @@ void array_destroy(Array_t *array);
 
 void array_set_cmp_fn(Array_t *arr, ArrayCmp fn);
 
-// [Option: void *]
+//[Option: void *]
 Option array_index(Array_t arr, unsigned n);
 #define array_at array_index
 #define array_nth array_index
 #define array_get array_index
 
-/** [Option void * ]
+/**[Option void *]
  * return the last element of the array */
 Option array_last(Array_t arr);
 // Resize "arr" to new size "nsz"
@@ -54,6 +56,12 @@ Option array_pop(Array_t *arr);
 Error array_pops(Array_t *arr, unsigned n);
 /** Remove the "n"th element of "arr" */
 Error array_remove(Array_t *arr, unsigned n);
+/** Remove the first element for which "iter" returns true */
+Error array_remove_first(Array_t *arr, ArrayCondIter iter);
+/**[Option int]
+ * Remove all elements for which "iter" returns true
+ * returns the number of elements removed */
+Option array_remove_if(Array_t *arr, ArrayCondIter iter);
 /** Remove all elements of "arr" */
 Error array_clear(Array_t *arr);
 /** Copy "src"'s elements to "dest" */

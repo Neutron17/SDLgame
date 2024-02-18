@@ -1,0 +1,49 @@
+#include <stdlib.h>
+#include <pthread.h>
+
+#include "entitysystem.h"
+#include "arr.h"
+#include "exitCodes.h"
+#include "log.h"
+#include "lt.h"
+
+static Array_t entities;
+static int id_counter;
+static pthread_mutex_t id_mutex;
+
+void entitysystemInit() {
+	UNWRAP_TO_COMPLEX(array_init(Entity, 3), entities, Array_t);
+	if(pthread_mutex_init(&id_mutex, NULL)) {
+		LOG(L_ERR, "Failed to create entity system mutex");
+		cleanUp(E_ALLOC);
+	}
+}
+void entitysystemDestroy() {
+	array_destroy(&entities);
+	pthread_mutex_destroy(&id_mutex);
+}
+void entitysystemAdd(Entity *e) {
+	pthread_mutex_lock(&id_mutex);
+	e->_id = id_counter;
+	id_counter++;
+	pthread_mutex_unlock(&id_mutex);
+	array_push(&entities, e);
+}
+Entity _entity(int x, int y, int w, int h, int type, SDL_Texture *texture) {
+	Entity ret = { x,y,w,h,type,texture };
+	entitysystemAdd(&ret);
+	return ret;
+}
+
+static int remover;
+static bool _remove_iter(const void *data) {
+	Entity it = *(Entity *)data;
+	if(it._id == remover)
+		return true;
+	return false;
+}
+
+void entitysystemRemove(Entity *e) {
+	remover = e->_id;
+	array_remove_first(&entities, _remove_iter);
+}

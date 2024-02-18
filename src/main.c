@@ -1,3 +1,4 @@
+#include <SDL2/SDL_scancode.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,23 +8,17 @@
 #include "exitCodes.h"
 #include "log.h"
 #include "lt.h"
-
-typedef struct {
-	int x,y;
-} Pos;
-
-typedef struct {
-	int x,y;
-	int w,h;
-} Entity;
+#include "entitysystem.h"
 
 void graphInit(void);
 void graphDestroy(void);
 void distanceInit(int n);
-void tilemapDraw(int n, SDL_Texture *tile); // TODO: naming
+void tilemapDraw(int n, SDL_Texture *tile);
 void keyInput(void);
 Pos mouseInput(void);
+void mouseFollow(Pos dest);
 bool edgeCollision(const Uint8 *state);
+SDL_Texture *textureLoad(const char *fname);
 
 #define NTH(ARR, N, Y, X) (ARR[N*Y + X])
 #define DELAY (1000/60)
@@ -40,30 +35,19 @@ Uint64 deltaTime;
 /** [x,y] 
  * 1x1 example:
  * [[[-1,-1],[0,-1],[1,-1]],[[-1,0],[0,0],[1,0]],[[-1,1],[0,1],[1,1]]] */
-Pos *distance; // TODO: naming
+Pos *distance;
 
 int main(int argc, char *argv[]) {
 	init();
-	player = (Entity){ width/2, height/2, 50, 50 };
-	SDL_Event e;
 	Uint64 startT;
 	Pos dest = {0,0};
 
-	SDL_Surface *surf = SDL_LoadBMP("box.bmp");
-	if(!surf) {
-		LOGF(L_ERR, "Couldn't load texture, '%s'", SDL_GetError());
-		cleanUp(E_SDL);
-	}
-	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
+	SDL_Texture *texture = textureLoad("box.bmp");
+	player = entity(width/2, height/2, 50, 50, texture);
 
-	SDL_Surface *surf1 = SDL_LoadBMP("1.bmp");
-	if(!surf) {
-		LOGF(L_ERR, "Couldn't load texture, '%s'", SDL_GetError());
-		cleanUp(E_SDL);
-	}
-	SDL_Texture *text1 = SDL_CreateTextureFromSurface(renderer, surf1);
+	SDL_Texture *text1 = textureLoad("1.bmp");
 	
-
+	SDL_Event e;
 	while(!quit) {
 		startT = SDL_GetTicks64();
 		SDL_PollEvent(&e);
@@ -83,26 +67,16 @@ int main(int argc, char *argv[]) {
 				break;
 			default: break;
 		}
+		if(0) // TODO
+			mouseFollow(dest);
 
-		/*if(abs(dest.x - player.x) > 4 && abs(dest.y - player.y) > 4) {
-			const int dx = dest.x - player.x;
-			const int dy = dest.y - player.y;
-			const double magn = sqrt(dx*dx + dy*dy);
-			const double vx = dx / magn;
-			const double vy = dy / magn;
-
-			player.x += vx * SPEED;
-			player.y += vy * SPEED;
-		}*/
-		SDL_Rect playerRect = { player.x - (player.w/2), player.y - (player.h/2), player.w, player.h };
+		SDL_Rect playerRect = { width/2 - (player.w/2), height/2 - (player.h/2), player.w, player.h };
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
 
-		//SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 		tilemapDraw(8, text1);
 		SDL_RenderCopy(renderer, texture, NULL, &playerRect);
-		//SDL_RenderFillRect(renderer, &playerRect);
 
 		SDL_RenderPresent(renderer);
 
@@ -110,10 +84,9 @@ int main(int argc, char *argv[]) {
 		if(DELAY > deltaTime)
 			SDL_Delay(DELAY - deltaTime);
 	}
+	entitysystemRemove(&player);
 	SDL_DestroyTexture(texture);
 	SDL_DestroyTexture(text1);
-	SDL_FreeSurface(surf);
-	SDL_FreeSurface(surf1);
 	cleanUp(E_SUCCESS);
 }
 
@@ -123,22 +96,35 @@ void keyInput(void) {
 		quit = true;
 		return;
 	}
-	if(edgeCollision(states))
-		return;
+	//if(edgeCollision(states))
+		//return;
+	const int speed = SPEED - (states[SDL_SCANCODE_LSHIFT] ? SPEED/2 : 0);
 
 	if(states[SDL_SCANCODE_W])
-		player.y -= SPEED;
+		player.y -= speed;
 	if(states[SDL_SCANCODE_A])
-		player.x -= SPEED;
+		player.x -= speed;
 	if(states[SDL_SCANCODE_S])
-		player.y += SPEED;
+		player.y += speed;
 	if(states[SDL_SCANCODE_D])
-		player.x += SPEED;
+		player.x += speed;
 }
 Pos mouseInput(void) {
 	int mx, my;
 	SDL_GetMouseState(&mx, &my);
 	return (Pos){mx,my};
+}
+void mouseFollow(Pos dest) {
+	if(abs(dest.x - player.x) > 4 && abs(dest.y - player.y) > 4) {
+		const int dx = dest.x - player.x;
+		const int dy = dest.y - player.y;
+		const double magn = sqrt(dx*dx + dy*dy); // Pythagoras
+		const double vx = dx / magn;
+		const double vy = dy / magn;
+
+		player.x += vx * SPEED;
+		player.y += vy * SPEED;
+	}
 }
 bool edgeCollision(const Uint8 *states) {
 	if(states[SDL_SCANCODE_W] && (player.y - player.h/2 - SPEED) < 0) {
@@ -158,8 +144,8 @@ bool edgeCollision(const Uint8 *states) {
 }
 
 void tilemapDraw(int n, SDL_Texture *tile) {
-	const Pos playertile = POS(player.x - (player.x % TILE_SZ), 
-				player.y - (player.y % TILE_SZ));
+	const Pos playertile = POS(width/2 - (player.x % TILE_SZ), 
+				height/2 - (player.y % TILE_SZ));
 	SDL_Rect rect = {0,0,TILE_SZ,TILE_SZ};
 	for(int i = 0; i < (2*n+1); i++) {
 		for(int j = 0; j < (2*n+1); j++) {
@@ -169,9 +155,19 @@ void tilemapDraw(int n, SDL_Texture *tile) {
 			SDL_RenderCopy(renderer, tile, NULL, &rect);
 		}
 	}
-
-
 }
+
+SDL_Texture *textureLoad(const char *fname) {
+	SDL_Surface *surf = SDL_LoadBMP(fname);
+	if(!surf) {
+		LOGF(L_ERR, "Couldn't load texture from file '%s', '%s'", fname, SDL_GetError());
+		cleanUp(E_SDL);
+	}
+	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
+	SDL_FreeSurface(surf);
+	return texture;
+}
+
 void distanceInit(int n) {
 	const int dim = (2*n+1)*(2*n+1);
 	distance = malloc(sizeof(Pos) * dim);
@@ -210,8 +206,10 @@ void graphDestroy(void) {
 void init(void) {
 	loginit(L_ALL, L_ALL);
 	graphInit();
+	entitysystemInit();
 }
-void cleanUp(int status) {
+_Noreturn void cleanUp(int status) {
+	entitysystemDestroy();
 	logdestroy();
 	graphDestroy();
 	exit(status);
