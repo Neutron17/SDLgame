@@ -2,10 +2,6 @@
 #define _NTR_ENTITY_SYSTEM_H_ 1
 #include <SDL2/SDL.h>
 
-typedef struct {
-	int x,y;
-} Pos;
-
 enum EnityType {
 	ET_HAS_HEALTH = 1,
 	ET_ENEMY = 2, // follows player
