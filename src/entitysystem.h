@@ -3,10 +3,12 @@
 #include <SDL2/SDL.h>
 
 enum EnityType {
-	ET_HAS_HEALTH = 1,
-	ET_ENEMY = 2, // follows player
+	ET_HAS_HEALTH 	= 1 << 0,
+	ET_ENEMY	= 1 << 1, // follows player
+	ET_COLLIDE 	= 1 << 2,
+	ET_STATIC 	= 1 << 3,
 
-	ET_DEFAULT = ET_HAS_HEALTH
+	ET_DEFAULT = ET_HAS_HEALTH | ET_COLLIDE
 };
 
 struct EntityState {

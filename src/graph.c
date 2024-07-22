@@ -2,21 +2,24 @@
 #include "base/log.h"
 #include "base/exitCodes.h"
 #include "global.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_video.h>
+#include "tile.h"
 
 SDL_Window *window;
 SDL_Renderer *renderer;
 int width = 500, height = 500;
 
-extern void distanceInit(int n);
 extern Pos *distance;
 
-void graphInit(void) {
+void graphInit(const char *title, int w, int h) {
 	distanceInit(8);
-	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		LOGF(L_ERR, "Couldn't init SDL, '%s'", SDL_GetError());
 		cleanUp(E_SDL);
 	}
-	window = SDL_CreateWindow("Title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_RESIZABLE);
+	//window = SDL_CreateWindow("Title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_RESIZABLE);
+	window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, SDL_WINDOW_RESIZABLE);
 	if(!window) {
 		LOGF(L_ERR, "Couldn't create window, '%s'", SDL_GetError());
 		cleanUp(E_SDL);
