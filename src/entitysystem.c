@@ -29,8 +29,8 @@ void entitysystemAdd(Entity *e) {
 	pthread_mutex_unlock(&id_mutex);
 	array_push(&entities, e);
 }
-Entity _entity(int x, int y, int w, int h, int type, SDL_Texture *texture) {
-	Entity ret = { x,y,w,h,type,texture };
+Entity _entity(Pos p, int w, int h, enum EntityType type, struct EntityState state, SDL_Texture *texture) {
+	Entity ret = { p.x, p.y, w,h, type, state,texture };
 	entitysystemAdd(&ret);
 	return ret;
 }
@@ -45,5 +45,6 @@ static bool _remove_iter(const void *data) {
 
 void entitysystemRemove(Entity *e) {
 	remover = e->_id;
+	memset(e, 0, sizeof(*e));
 	array_remove_first(&entities, _remove_iter);
 }

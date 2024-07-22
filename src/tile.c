@@ -15,8 +15,13 @@ Pos *distance;
 static TileEnv env;
 static int n;
 
+// freed in graph.c
 int *tiles;
-Pos tiles_dim;
+static Pos tiles_dim;
+
+TileProp tilePropFromPos(Pos pos) {
+	return env.properties[tiles[tiles_dim.x*(pos.y/TILE_SZ) + pos.x/TILE_SZ]];;
+}
 
 void _old_tilemapDraw(int n, SDL_Texture *tile) {
 	const Pos playertile = POS(width/2 - (player.x % TILE_SZ), 
@@ -35,7 +40,7 @@ void _old_tilemapDraw(int n, SDL_Texture *tile) {
 void tilemapDraw() {
 	for(int i = 0; i < tiles_dim.y; i++) {
 		for(int j = 0; j < tiles_dim.x; j++) {
-     			const int index = tiles[i*tiles_dim.y + j];
+     			const int index = tiles[i*tiles_dim.x + j];
 			if(index == -1)
 				continue;
 			SDL_Texture *tex = env.textures[index];
@@ -88,7 +93,7 @@ void distanceInit(int _n) {
 
 void tilemapSet(TileEnv _env, int *_tiles, int x, int y) {
 	env = _env;
-	tiles = malloc(sizeof(*tiles) * x * y);
+	tiles = malloc(sizeof(*tiles) * x * y); // freed in graph.c
 	memcpy(tiles, _tiles, sizeof(int) * x * y);
 	tiles_dim = POS(x, y);
 }

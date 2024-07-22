@@ -11,6 +11,7 @@ SDL_Renderer *renderer;
 int width = 500, height = 500;
 
 extern Pos *distance;
+extern int *tiles;
 
 void graphInit(const char *title, int w, int h) {
 	distanceInit(8);
@@ -32,6 +33,7 @@ void graphInit(const char *title, int w, int h) {
 }
 void graphDestroy(void) {
 	free(distance);
+	free(tiles);
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_Quit();

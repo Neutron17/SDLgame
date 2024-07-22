@@ -1,41 +1,35 @@
 #include "input.h"
+#include "entitysystem.h"
 #include "global.h"
+#include "tile.h"
+#include "dmg.h"
+#include <SDL2/SDL_stdinc.h>
 #include <stdbool.h>
 
 extern bool quit;
 static Pos dest;
 
-void input(SDL_Event e) {
-	switch (e.type) {
-		case SDL_QUIT:
-			quit = true;
-			break;
-		case SDL_WINDOWEVENT:
-			if(e.window.event == SDL_WINDOWEVENT_RESIZED)
-				SDL_GetWindowSize(window, &width, &height);
-			break;
-		case SDL_KEYDOWN: {// e.key.keysym.scancode
-			const Uint8 *states = SDL_GetKeyboardState(NULL);
-			if(states[SDL_SCANCODE_ESCAPE] || states[SDL_SCANCODE_Q]) {
-				quit = true;
-				return;
-			}
-			const int speed = SPEED - (states[SDL_SCANCODE_LSHIFT] ? SPEED/2 : 0);
-
-			if(states[SDL_SCANCODE_W])
-				player.y -= speed;
-			if(states[SDL_SCANCODE_A])
-				player.x -= speed;
-			if(states[SDL_SCANCODE_S])
-				player.y += speed;
-			if(states[SDL_SCANCODE_D])
-				player.x += speed;
-		}; break;
-		case SDL_MOUSEBUTTONDOWN:
-			SDL_GetMouseState(&dest.x, &dest.y);
-			break;
-		default: break;
+Pos movePlayer(Entity *self, const Uint8 *keystates, TileProp tile) {
+	Pos pl = *(Pos *)self;
+	//printf("(%d %d) -> ", pl.x, pl.y);
+	if(keystates[SDL_SCANCODE_ESCAPE] || keystates[SDL_SCANCODE_Q]) {
+		quit = true;
+		return pl;
 	}
+
+	const int speed = (SPEED + (keystates[SDL_SCANCODE_LSHIFT] ? SPEED/2 : 0)) * tile.speed_mul;
+	dmgResolve(NULL, self, (Dmg){.type=DMG_TILE, .value=tile.dmg_p_sec});
+
+	if(keystates[SDL_SCANCODE_W])
+		pl.y -= speed;
+	if(keystates[SDL_SCANCODE_A])
+		pl.x -= speed;
+	if(keystates[SDL_SCANCODE_S])
+		pl.y += speed;
+	if(keystates[SDL_SCANCODE_D])
+		pl.x += speed;
+	//printf("(%d %d)\n", pl.x, pl.y);
+	return pl;
 }
 
 void mouseFollow(Pos dest) {
