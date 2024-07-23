@@ -13,8 +13,8 @@
 #include "graph.h"
 #include "entitysystem.h"
 #include "movement.h"
+#include "moves.h"
 #include "tile.h"
-#include "input.h"
 
 #define DELAY (1000/60)
 

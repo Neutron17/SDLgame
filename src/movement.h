@@ -1,6 +1,8 @@
 /** -- movement.h --
  * handles movement of entities
  * (player too)
+ *
+ * for callback implementations see moves.h
  * */
 #ifndef _NTR_MOVE_H_
 #define _NTR_MOVE_H_ 1

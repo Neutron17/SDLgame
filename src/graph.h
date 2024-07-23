@@ -13,8 +13,10 @@ extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 extern int width, height;
 
-// Initialize graphics
+/** Initializes graphics, for 
+ * deinitialization see 'graphDestroy' */
 void graphInit(const char *title, int w, int h);
+/** Clears up after 'graphInit' */
 void graphDestroy(void);
 // Loads texture from BMP file ('fname')
 SDL_Texture *textureLoad(const char *fname);

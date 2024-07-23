@@ -1,10 +1,10 @@
-#include "input.h"
-#include "entitysystem.h"
-#include "global.h"
-#include "tile.h"
+#include "moves.h"
 #include "dmg.h"
-#include <SDL2/SDL_stdinc.h>
+#include "global.h"
+
 #include <stdbool.h>
+
+#define SPEED (15)
 
 extern bool quit;
 static Pos dest;

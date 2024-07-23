@@ -2,6 +2,7 @@
 #ifndef _NTR_DMG_H_
 #define _NTR_DMG_H_ 1
 
+/** Describes the source of the damage */
 enum DmgType {
 	DMG_MELEE,
 	DMG_RANGED,

@@ -19,6 +19,7 @@ enum EntityType {
 	ET_DEFAULT = ET_HAS_HEALTH | ET_COLLIDE
 };
 
+/** Extends some types in 'enum EntityType' with values */
 struct EntityState {
 	int health;
 	float thorn_percent;
@@ -26,8 +27,7 @@ struct EntityState {
 };
 
 /**
- * Note: can be casted to Pos
- * */
+ * Note: can be casted to 'Pos' */
 typedef struct {
 	int x,y;
 	int w,h;
@@ -36,9 +36,6 @@ typedef struct {
 	SDL_Texture *texture;
 	int _id;
 } Entity;
-
-#define ENTITY_TO_POS(E) (*(Pos *)&(E))
-#define ENTITY_TO_POSP(E) ((Pos *)&(E))
 
 void entitysystemInit();
 void entitysystemDestroy();
