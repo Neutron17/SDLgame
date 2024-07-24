@@ -1,7 +1,7 @@
-#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #include <SDL2/SDL.h>
 
@@ -15,6 +15,7 @@
 #include "movement.h"
 #include "moves.h"
 #include "tile.h"
+#include "dmg.h"
 
 #define DELAY (1000/60)
 
@@ -23,16 +24,11 @@ bool quit;
 static Uint64 deltaTime;
 Entity player;
 
-Pos moveGimp(Entity *self, const Uint8 *keystates, TileProp tile) {
-	const double a = atan2(player.y - self->y, player.x - self->x);
-	const int speeeed = 2;
-	//Pos p = POS(abs(player.x-self->x), 2.0/abs(player.y-self->y));
-	Pos p = POS(self->x + speeeed*cos(a), self->y + speeeed*sin(a));
-	return p;
-}
+void sighandl(int signal);
 
 int main(int argc, char *argv[]) {
 	init();
+	signal(SIGINT, sighandl);
 
 	SDL_Texture *playerTexture = textureLoad("box.bmp");
 	//player = entity(width/2, height/2, 50, 50, playerTexture);
@@ -97,15 +93,13 @@ int main(int argc, char *argv[]) {
 			SDL_Delay(DELAY - deltaTime);
 	}
 	entitysystemRemove(&player);
-	SDL_DestroyTexture(playerTexture);
 	SDL_DestroyTexture(tileTexture);
 	SDL_DestroyTexture(lava);
-	SDL_DestroyTexture(gimpTex);
 	cleanUp(E_SUCCESS);
 }
 
 void init(void) {
-	loginit(L_ALL, L_ALL);
+	loginit(L_DEBUG, L_DEBUG);
 	graphInit("Title", 500, 500);
 	entitysystemInit();
 	movementInit();
@@ -116,5 +110,10 @@ _Noreturn void cleanUp(int status) {
 	logdestroy();
 	graphDestroy();
 	exit(status);
+}
+
+void sighandl(int signal) {
+	if(signal == SIGINT)
+		cleanUp(E_SIGNAL);
 }
 

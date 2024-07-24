@@ -6,9 +6,10 @@
 #include "base/exitCodes.h"
 #include "base/log.h"
 #include "base/lt.h"
+#include "movement.h"
 
 static Array_t entities;
-static int id_counter;
+static int id_counter = 1;
 static pthread_mutex_t id_mutex;
 
 void entitysystemInit() {
@@ -44,7 +45,11 @@ static bool _remove_iter(const void *data) {
 }
 
 void entitysystemRemove(Entity *e) {
-	remover = e->_id;
+	//remover = e->_id;
+	if(e->_moveID)
+		movementUnbind(*e);
+	array_remove(&entities, e->_id-1); // TODO: index shifts after remove
+	SDL_DestroyTexture(e->texture);
 	memset(e, 0, sizeof(*e));
-	array_remove_first(&entities, _remove_iter);
 }
+

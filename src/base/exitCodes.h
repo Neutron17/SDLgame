@@ -7,7 +7,8 @@ enum ExitCode {
 	E_IO,
 	E_ARG,
 	E_UNKNOWN,
-	E_SDL
+	E_SDL,
+	E_SIGNAL
 };
 
 #endif /* ifndef _NTR_EXCODE_H_ */

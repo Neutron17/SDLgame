@@ -4,6 +4,7 @@
 
 enum LogLevel {
 	L_ALL = 0,
+	L_DEBUG,
 	L_INFO,
 	L_WARN,
 	L_ERR,

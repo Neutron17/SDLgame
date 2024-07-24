@@ -10,19 +10,19 @@
  * [[[-1,-1],[0,-1],[1,-1]],
  *  [[-1, 0],[0, 0],[1, 0]],
  *  [[-1, 1],[0, 1],[1, 1]]] 
- * freed by graphDestroy */
-Pos *distance;
+ * freed by 'tilemapDestroy' */
+static Pos *distance;
 static TileEnv env;
 static int n;
 
-// freed in graph.c
-int *tiles;
+// freed by 'tilemapDestroy'
+static int *tiles;
 static Pos tiles_dim;
 
 TileProp tilePropFromPos(Pos pos) {
 	return env.properties[tiles[tiles_dim.x*(pos.y/TILE_SZ) + pos.x/TILE_SZ]];;
 }
-
+/*
 void _old_tilemapDraw(int n, SDL_Texture *tile) {
 	const Pos playertile = POS(width/2 - (player.x % TILE_SZ), 
 				height/2 - (player.y % TILE_SZ));
@@ -35,7 +35,7 @@ void _old_tilemapDraw(int n, SDL_Texture *tile) {
 			SDL_RenderCopy(renderer, tile, NULL, &rect);
 		}
 	}
-}
+}*/
 
 void tilemapDraw() {
 	for(int i = 0; i < tiles_dim.y; i++) {
@@ -44,7 +44,7 @@ void tilemapDraw() {
 			if(index == -1)
 				continue;
 			SDL_Texture *tex = env.textures[index];
-			SDL_Rect rect = { width/2 - player.x + TILE_SZ*j, height/2 - player.y + TILE_SZ*i, TILE_SZ, TILE_SZ};
+			SDL_Rect rect = { (float)width/2 - player.x + TILE_SZ*j, (float)height/2 - player.y + TILE_SZ*i, TILE_SZ, TILE_SZ};
 			SDL_RenderCopy(renderer, tex, NULL, &rect);
 		}
 	}
@@ -89,6 +89,11 @@ void distanceInit(int _n) {
 	for(int i = -_n; i <= _n; i++)
 		for(int j = -_n; j <= _n; j++)
 			distance[(2*_n+1)*(i+_n) + j+_n] = POS(TILE_SZ*j, TILE_SZ*i);
+}
+
+void tilemapDestroy() {
+	free(distance);
+	free(tiles);
 }
 
 void tilemapSet(TileEnv _env, int *_tiles, int x, int y) {

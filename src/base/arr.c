@@ -133,14 +133,13 @@ Error array_pops(Array_t *arr, unsigned n) {
 Error array_remove(Array_t *arr, unsigned n) {
 	if(!arr->isValid)
 		return ERROR_FAIL;
-	if(n == arr->used)
+	if(n == arr->used - 1)
 		return array_pop(arr);
 
 	void *old = NTH_AP(arr, n);
 	void *new = NTH_AP(arr, n+1);
 
-	memmove(old,
-		new,
+	memmove(old,new,
 		(arr->used - n - 1)*arr->mem_sz);
 	arr->used--;
 	return ERROR_SUCC;

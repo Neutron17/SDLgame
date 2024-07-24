@@ -19,7 +19,7 @@
 typedef struct {
 	/** 0 < speed_mul <= 1
 	 * for default, set to 1 */
-	float speed_mul;
+	double speed_mul;
 	// for default, set to 0
 	int dmg_p_sec;
 } TileProp;
@@ -28,14 +28,15 @@ typedef struct {
  * Describes the environment in which tiles are interpreted.
  * corresponds to the whole system, NOT a single tile */
 typedef struct {
-	// 'textures' are not freed by the tilesystem
+	// 'textures' are freed by the tilesystem
 	SDL_Texture **textures;
-	// 'properties' are not freed by the tilesystem
+	// 'properties' are NOT freed by the tilesystem
 	TileProp *properties;
 	int len;
 } TileEnv;
 
 void tilemapSet(TileEnv _env, int *_tiles, int x, int y);
+void tilemapDestroy();
 TileProp tilePropFromPos(Pos pos);
 
 /** Copies the tile textures to the renderer

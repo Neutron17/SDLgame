@@ -5,7 +5,11 @@
 typedef struct {
 	int x,y;
 } Pos;
+typedef struct {
+	float x,y;
+} PosF;
 #define POS(x, y) ((Pos) { x,y })
+#define POSF(x, y) ((PosF) { x,y })
 
 #define TILE_SZ (70)
 

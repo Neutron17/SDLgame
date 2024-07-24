@@ -10,7 +10,8 @@
 #include "tile.h"
 
 // self is not const, bc tiles can damage the entity
-Pos movePlayer(Entity *self, const Uint8 *keystates, TileProp tile);
+PosF movePlayer(Entity *self, const Uint8 *keystates, TileProp tile);
+PosF moveGimp(Entity *self, const Uint8 *keystates, TileProp tile);
 void mouseFollow(Pos dest);
 
 #endif /* ifndef _NTR_MOVES_H_ */

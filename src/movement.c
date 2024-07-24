@@ -21,13 +21,24 @@ void movementDestroy() {
 void movementBindCb(Entity *entity, movementCallbackFn cb) {
 	const struct MovePair pair = { entity, cb };
 	array_push(&movableEntityMap, &pair);
+	entity->_moveID = movableEntityMap.used;
+}
+
+void movementUnbind(Entity entity) {
+	if(!entity._moveID)
+		return;
+	array_remove(&movableEntityMap, entity._moveID-1);
 }
 
 static const Uint8 *states;
 static void movementForEach(void *data) {
 	struct MovePair pair = *(struct MovePair *)data;
-	Pos *p = (Pos *)pair.e;
-	*p = pair.cb(pair.e, states, tilePropFromPos(*p));
+	if(!pair.e)
+		return;
+	PosF *p = (PosF *)pair.e;
+	const Pos pFloor = { floor(p->x), floor(p->y) };
+	//printf("(%d %d)\n", p->x, p->y);
+	*p = pair.cb(pair.e, states, tilePropFromPos(pFloor));
 }
 
 /** Calls the movement callback on each bound entity */
