@@ -1,8 +1,9 @@
 #include "movement.h"
 #include "base/arr.h"
+#include "base/log.h"
 #include "entitysystem.h"
+#include "global.h"
 #include "tile.h"
-#include <SDL2/SDL_stdinc.h>
 
 struct MovePair {
 	Entity *e;
@@ -22,16 +23,20 @@ void movementBindCb(Entity *entity, movementCallbackFn cb) {
 	const struct MovePair pair = { entity, cb };
 	array_push(&movableEntityMap, &pair);
 	entity->_moveID = movableEntityMap.used;
+	if(DEBUG)
+		LOGF(L_DEBUG, "ADDED MOVE ID: %d\n", entity->_moveID);
 }
 
 void movementUnbind(Entity entity) {
 	if(!entity._moveID)
 		return;
-	array_remove(&movableEntityMap, entity._moveID-1);
+	array_null(&movableEntityMap, entity._moveID-1);
 }
 
 static const Uint8 *states;
 static void movementForEach(void *data) {
+	if(!data)
+		return;
 	struct MovePair pair = *(struct MovePair *)data;
 	if(!pair.e)
 		return;

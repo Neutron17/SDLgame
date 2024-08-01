@@ -24,10 +24,11 @@ struct EntityState {
 	int health;
 	float thorn_percent;
 	float shield_percent;
+	float speed;
 };
 
 /**
- * Note: can be casted to 'PosF' */
+ * Note: can be casted to 'PosF', and 'SDL_Rect' */
 typedef struct {
 	float x,y;
 	int w,h;
@@ -40,14 +41,15 @@ typedef struct {
 	int _moveID;
 } Entity;
 
-void entitysystemInit();
-void entitysystemDestroy();
-void entitysystemAdd(Entity *e);
+void entitysystemInit(void);
+void entitysystemDestroy(void);
+Entity *entitysystemAdd(Entity *e);
 /** Calls 'movementUnbind'
  * Destroys the texture */
 void entitysystemRemove(Entity *e);
-Entity _entity(Pos pos, int w, int h, enum EntityType type, struct EntityState state, SDL_Texture *texture);
-#define entity(P, W, H, S, T) _entity(P,W,H,ET_DEFAULT,S,T)
+void entitysystemDrawAll(void);
+Entity *_entity(Pos pos, int w, int h, enum EntityType type, struct EntityState state, SDL_Texture *texture);
+#define ENTITY(P, W, H, S, T) _entity(P,W,H,ET_DEFAULT,S,T)
 
 #endif // _NTR_ENTITY_SYSTEM_H_
 

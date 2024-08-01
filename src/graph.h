@@ -11,6 +11,12 @@ typedef struct {
 #define POS(x, y) ((Pos) { x,y })
 #define POSF(x, y) ((PosF) { x,y })
 
+#define POS_ADD(A, B) ((Pos) { (A).x+(B).x, (A).y+(B)+y })
+#define POSF_ADD(A, B) ((PosF) { (A).x+(B).x, (A).y+(B).y })
+#define POS_ADD2(A, B) { (A).x += (B).x; (A).y += (B).y; }
+
+#define POS_DIST(A, B) sqrt(((B).x-(A).x)*((B).x-(A).x) + ((B).y-(A).y)*((B).y-(A).y))
+
 #define TILE_SZ (70)
 
 extern SDL_Window *window;

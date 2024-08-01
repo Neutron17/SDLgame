@@ -58,6 +58,9 @@ Option array_last(Array_t arr) {
 		return Option_WRAP_ERR("array is empty");
 	return array_index(arr, arr.used-1);
 }
+Option array_lastptr(Array_t arr) {
+	return Option_WRAP_OK(NTH_A(arr, arr.used-1));
+}
 
 Error array_resize(Array_t *arr, unsigned nsz) {
 	if(nsz < arr->used)
@@ -161,6 +164,16 @@ Option array_remove_if(Array_t *arr, ArrayCondIter iter) {
 	if(!count)
 		return ERROR_FAIL;
 	return Option_WRAP_OK(count);
+}
+
+Error array_null(Array_t *arr, unsigned n) {
+	/*Entity *dest = NTH_AP(arr, n);
+	printf("Nulling %d\n", dest->_moveID);*/
+	if(!arr->isValid)
+		return ERROR_FAIL;
+	
+	memset(NTH_AP(arr, n), 0, arr->mem_sz);
+	return ERROR_SUCC;
 }
 
 Error array_clear(Array_t *arr) { 

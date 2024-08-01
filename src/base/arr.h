@@ -36,6 +36,9 @@ Option array_index(Array_t arr, unsigned n);
 /**[Option void *]
  * return the last element of the array */
 Option array_last(Array_t arr);
+/**[Option void *]
+ * return a pointer to the last element of the array */
+Option array_lastptr(Array_t arr);
 // Resize "arr" to new size "nsz"
 Error array_resize(Array_t *arr, unsigned nsz);
 // resize array to arr.size * 2
@@ -62,6 +65,8 @@ Error array_remove_first(Array_t *arr, ArrayCondIter iter);
  * Remove all elements for which "iter" returns true
  * returns the number of elements removed */
 Option array_remove_if(Array_t *arr, ArrayCondIter iter);
+/** Zeros out the value at index n */
+Error array_null(Array_t *arr, unsigned n);
 /** Remove all elements of "arr" */
 Error array_clear(Array_t *arr);
 /** Copy "src"'s elements to "dest" */

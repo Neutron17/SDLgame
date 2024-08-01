@@ -44,7 +44,7 @@ void tilemapDraw() {
 			if(index == -1)
 				continue;
 			SDL_Texture *tex = env.textures[index];
-			SDL_Rect rect = { (float)width/2 - player.x + TILE_SZ*j, (float)height/2 - player.y + TILE_SZ*i, TILE_SZ, TILE_SZ};
+			SDL_Rect rect = { (float)width/2 - player->x + TILE_SZ*j, (float)height/2 - player->y + TILE_SZ*i, TILE_SZ, TILE_SZ};
 			SDL_RenderCopy(renderer, tex, NULL, &rect);
 		}
 	}
@@ -98,7 +98,7 @@ void tilemapDestroy() {
 
 void tilemapSet(TileEnv _env, int *_tiles, int x, int y) {
 	env = _env;
-	tiles = malloc(sizeof(*tiles) * x * y); // freed in graph.c
+	tiles = malloc(sizeof(*tiles) * x * y);
 	memcpy(tiles, _tiles, sizeof(int) * x * y);
 	tiles_dim = POS(x, y);
 }

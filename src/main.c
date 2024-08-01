@@ -1,3 +1,4 @@
+#include <SDL2/SDL_render.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +23,7 @@
 // accessed in input.c
 bool quit;
 static Uint64 deltaTime;
-Entity player;
+Entity *player;
 
 void sighandl(int signal);
 
@@ -31,17 +32,21 @@ int main(int argc, char *argv[]) {
 	signal(SIGINT, sighandl);
 
 	SDL_Texture *playerTexture = textureLoad("box.bmp");
-	//player = entity(width/2, height/2, 50, 50, playerTexture);
-	struct EntityState st = (struct EntityState){ .health = 100 };
-	player = entity(POS(10, 10), 50, 50, st, playerTexture);
-	movementBindCb(&player, movePlayer);
+	SDL_Texture *gimpTex = textureLoad("gimp.bmp");
+	SDL_Texture *rockTex = textureLoad("rock.bmp");
 
 	SDL_Texture *tileTexture = textureLoad("1.bmp");
 	SDL_Texture *lava = textureLoad("lava.bmp");
 
-	SDL_Texture *gimpTex = textureLoad("gimp.bmp");
-	Entity gimp = _entity(POS(50,50), 75, 75, ET_HAS_HEALTH | ET_ENEMY | ET_COLLIDE, (struct EntityState) { .health=200 }, gimpTex);
-	movementBindCb(&gimp, moveGimp);
+	//player = entity(width/2, height/2, 50, 50, playerTexture);
+	const struct EntityState st = (struct EntityState){ .health = 100, .speed = 15.0 };
+	player = ENTITY(POS(10, 10), 50, 50, st, playerTexture);
+	movementBindCb(player, movePlayer);
+
+	Entity *gimp = _entity(POS(50,50), 75, 75, ET_HAS_HEALTH | ET_ENEMY | ET_COLLIDE, (struct EntityState) { .health=200, .speed = 2.0 }, gimpTex);
+	movementBindCb(gimp, moveGimp);
+
+	Entity *rock = _entity(POS(50, 50), 80, 80, ET_STATIC | ET_COLLIDE | ET_NO_STATE, (struct EntityState){0}, rockTex);
 	
 	Uint64 startT;
 	SDL_Event e;
@@ -49,8 +54,8 @@ int main(int argc, char *argv[]) {
 	TileProp props[] = { (TileProp){ 0.5, 0 }, (TileProp) { 2, 10 } };
 	TileEnv env = { .textures=textures, .properties=props, .len=1 };
 	int tiles[] = { 
-		0, 0, 0, 0, 0,
-		0, 1, 0, 1, 0,
+		0, 1, 0, 0, 0,
+		1, 1, 0, 1, 0,
 		0, 1, 0, 0, 0,
 		0, 0, 0, 0, 0
 	};
@@ -71,20 +76,11 @@ int main(int argc, char *argv[]) {
 		movementMoveAll();
 		//printf("%d %d\n", player.x, player.y);
 
-		const SDL_Rect playerRect = { 
-			width/2 - (player.w/2), height/2 - (player.h/2), 
-			player.w, player.h };
-		const SDL_Rect gimpRect = { 
-			gimp.x - player.x + width/2 - 75/2, gimp.y - player.y + height/2 - 75/2,
-			gimp.w, gimp.h };
-
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
 
 		tilemapDraw();
-		SDL_RenderCopy(renderer, playerTexture, NULL, &playerRect);
-		SDL_RenderCopy(renderer, gimpTex, NULL, &gimpRect);
-		printf("%d\n", player.state.health);
+		entitysystemDrawAll();
 
 		SDL_RenderPresent(renderer);
 
@@ -92,7 +88,8 @@ int main(int argc, char *argv[]) {
 		if(DELAY > deltaTime)
 			SDL_Delay(DELAY - deltaTime);
 	}
-	entitysystemRemove(&player);
+	entitysystemRemove(player);
+	entitysystemRemove(rock);
 	SDL_DestroyTexture(tileTexture);
 	SDL_DestroyTexture(lava);
 	cleanUp(E_SUCCESS);
